@@ -2,6 +2,22 @@
 
 A tiny native macOS memory for everything you copy and every screenshot you take. It lives in the notch, and nothing leaves your Mac.
 
+![The Nook memory panel: screenshots and copied text grouped by day, searchable](docs/panel.png)
+
+![The Nook shelf dropping down from the top of the screen with recent captures and copies](docs/shelf.png)
+
+## Install
+
+1. Download **Nook.zip** from the [latest release](https://github.com/vanshtri/nook/releases/latest), unzip it, and drag **Nook.app** into **Applications**.
+2. Open Nook. macOS will warn that it can't verify the developer, because the app isn't notarized yet.
+   Go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**.
+   (Or in Terminal: `xattr -dr com.apple.quarantine /Applications/Nook.app`)
+3. When asked, allow **Accessibility** (System Settings → Privacy & Security → Accessibility), then quit and reopen Nook.
+   This is needed for the double-tap ⌘ shortcuts.
+
+Nook has no window. Look for its icon in the menu bar, hover the top centre of the screen (or the notch), or double-tap right ⌘.
+Requires macOS 13 or later.
+
 - **Hover the notch** to open the shelf: recent screenshots and copies, with search.
 - **Double-tap left ⌘** to capture an area. It's saved, OCR'd and left on the clipboard.
 - Each item is labelled with the app it came from, and screenshots are titled by their largest readable text.
@@ -12,7 +28,7 @@ A tiny native macOS memory for everything you copy and every screenshot you take
 - Secrets from password managers (concealed pasteboard types) are skipped.
 - Data lives in `~/Library/Application Support/Nook` (`index.json` plus `images/`).
 
-## Build & run
+## Build from source
 
 Needs only the Xcode Command Line Tools (macOS 13+).
 
@@ -43,3 +59,7 @@ A troubleshooting log is written to `~/Library/Application Support/Nook/debug.lo
 - Pin favourites; exclude specific apps from clipboard capture
 - SQLite + FTS5 index once history gets large
 - Settings window (history limit, shortcuts)
+
+## License
+
+[MIT](LICENSE)
