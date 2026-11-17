@@ -6,3 +6,4 @@ build/
 .build-x86/
 .build-arm/
 dist/
+.build-*/
