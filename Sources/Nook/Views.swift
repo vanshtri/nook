@@ -725,7 +725,8 @@ struct PanelView: View {
             .sorted { $0.key > $1.key }
         return ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2, pinnedViews: .sectionHeaders) {
+                LazyVStack(alignment: .leading, spacing: 2) {
+                    Color.clear.frame(height: 0).id("top")
                     ForEach(groups, id: \.key) { day, items in
                         Section {
                             ForEach(items) { item in
@@ -746,14 +747,19 @@ struct PanelView: View {
                                 .foregroundStyle(Color.white.opacity(0.35))
                                 .padding(.horizontal, 18).padding(.top, 10).padding(.bottom, 5)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(VisualEffect(material: .hudWindow).overlay(Color.black.opacity(0.2)))
                         }
                     }
                 }
                 .padding(.bottom, 8)
             }
+            // Items added while the panel was hidden push the list down (macOS keeps existing rows in
+            // place), so always start from the top when it opens or the results change.
+            .onChange(of: model.focusToken) { _ in proxy.scrollTo("top", anchor: .top) }
+            .onChange(of: model.query) { _ in proxy.scrollTo("top", anchor: .top) }
+            .onChange(of: model.filter) { _ in proxy.scrollTo("top", anchor: .top) }
             .onChange(of: model.selection) { sel in
-                if results.indices.contains(sel) { proxy.scrollTo(results[sel].id) }
+                if sel == 0 { proxy.scrollTo("top", anchor: .top) }
+                else if results.indices.contains(sel) { proxy.scrollTo(results[sel].id) }
             }
         }
     }
