@@ -125,6 +125,12 @@ final class Store: ObservableObject {
 
     /// Puts the item back on the clipboard and moves it to the top.
     func copy(_ item: Item) {
+        writeToPasteboard(item)
+        bump(item)
+    }
+
+    /// Writes the item to the clipboard without reordering the history.
+    func writeToPasteboard(_ item: Item) {
         let pb = NSPasteboard.general
         pb.clearContents()
         switch item.kind {
@@ -142,12 +148,23 @@ final class Store: ObservableObject {
             }
         }
         ownChangeCount = pb.changeCount
-        if let i = items.firstIndex(where: { $0.id == item.id }) {
-            var moved = items.remove(at: i)
-            moved.date = Date()
-            items.insert(moved, at: 0)
-            scheduleSave()
-        }
+    }
+
+    /// Copies plain text (e.g. the words found in a screenshot) without adding a history item.
+    func copyString(_ s: String) {
+        let pb = NSPasteboard.general
+        pb.clearContents()
+        pb.setString(s, forType: .string)
+        ownChangeCount = pb.changeCount
+    }
+
+    /// Moves an item to the top of the history (most recently used).
+    func bump(_ item: Item) {
+        guard let i = items.firstIndex(where: { $0.id == item.id }) else { return }
+        var moved = items.remove(at: i)
+        moved.date = Date()
+        items.insert(moved, at: 0)
+        scheduleSave()
     }
 
     func delete(_ item: Item) {
@@ -273,12 +290,14 @@ enum OCR {
     }
 }
 
-/// Small downscaled previews, cached in memory.
+/// Downscaled previews, cached in memory per size.
 enum Thumbs {
-    private static let cache = NSCache<NSURL, NSImage>()
+    private static let cache = NSCache<NSString, NSImage>()
+    private static var sizes: [URL: CGSize] = [:]
 
     static func image(for url: URL, maxPixel: Int = 480) -> NSImage? {
-        if let hit = cache.object(forKey: url as NSURL) { return hit }
+        let key = "\(url.path)@\(maxPixel)" as NSString
+        if let hit = cache.object(forKey: key) { return hit }
         let opts: [CFString: Any] = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
@@ -287,7 +306,19 @@ enum Thumbs {
         guard let src = CGImageSourceCreateWithURL(url as CFURL, nil),
               let cg = CGImageSourceCreateThumbnailAtIndex(src, 0, opts as CFDictionary) else { return nil }
         let img = NSImage(cgImage: cg, size: NSSize(width: cg.width / 2, height: cg.height / 2))
-        cache.setObject(img, forKey: url as NSURL)
+        cache.setObject(img, forKey: key)
         return img
+    }
+
+    /// Pixel dimensions of an image file (call on the main thread).
+    static func pixelSize(for url: URL) -> CGSize? {
+        if let known = sizes[url] { return known }
+        guard let src = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any],
+              let w = props[kCGImagePropertyPixelWidth] as? Int,
+              let h = props[kCGImagePropertyPixelHeight] as? Int else { return nil }
+        let size = CGSize(width: w, height: h)
+        sizes[url] = size
+        return size
     }
 }

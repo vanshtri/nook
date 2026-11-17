@@ -22,6 +22,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         screenshots.start()
         shelf.setup()
         panel.setup()
+        shelf.model.openPanel = { [weak self] in
+            self?.shelf.close()
+            self?.panel.show()
+        }
 
         hotkeys.onLeft = { Capture.region() }
         hotkeys.onRight = { [weak self] in self?.panel.toggle() }

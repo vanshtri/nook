@@ -2,9 +2,9 @@
 
 A tiny native macOS memory for everything you copy and every screenshot you take. It lives in the notch, and nothing leaves your Mac.
 
-![The Nook memory panel: screenshots and copied text grouped by day, searchable](docs/panel.png)
+![The Nook memory panel: a searchable list grouped by day with a large preview of the selected screenshot](docs/panel.png)
 
-![The Nook shelf dropping down from the top of the screen with recent captures and copies](docs/shelf.png)
+![The Nook shelf growing out of the top of the screen with recent screenshots, a link and a colour swatch](docs/shelf.png)
 
 ## Install
 
@@ -21,9 +21,9 @@ Requires macOS 13 or later.
 - **Hover the notch** to open the shelf: recent screenshots and copies, with search.
 - **Double-tap left ⌘** to capture an area. It's saved, OCR'd and left on the clipboard.
 - Each item is labelled with the app it came from, and screenshots are titled by their largest readable text.
-- **Double-tap right ⌘** to open the memory panel: everything grouped by day, searchable, with ↑↓ ↩ to copy.
+- **Double-tap right ⌘** to open the memory panel: a searchable list grouped by day, with a large preview of the selected item, All / Screenshots / Text filters (⇥), and ↑↓ ↩ to copy.
 - **Search finds text inside screenshots** using on-device OCR (Apple Vision).
-- **Click to copy, or drag out** as a real file (images) or text.
+- **Copy or drag out**: ↩ or double-click copies in the panel (⇧↩ copies just the text in a screenshot), a click copies in the shelf, and anything can be dragged out as a real file or text.
 - System screenshots (⌘⇧3/4/5) are picked up automatically through Spotlight.
 - Secrets from password managers (concealed pasteboard types) are skipped.
 - Data lives in `~/Library/Application Support/Nook` (`index.json` plus `images/`).
